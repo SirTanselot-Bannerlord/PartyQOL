@@ -1,0 +1,22 @@
+<Brushes>
+  <!-- Real MP lobby settings cog; atlas loaded at runtime via ui_mplobby (not present in campaign by default). -->
+  <Brush Name="PartyQOL.Settings.Button">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="MPLobby\Generic\settings_icon" Color="#FEC157FF" />
+    </Layers>
+    <Styles>
+      <Style Name="Default">
+        <BrushLayer Name="Default" Sprite="MPLobby\Generic\settings_icon" ColorFactor="0.85" />
+      </Style>
+      <Style Name="Hovered">
+        <BrushLayer Name="Default" Sprite="MPLobby\Generic\settings_icon_hover" />
+      </Style>
+      <Style Name="Pressed">
+        <BrushLayer Name="Default" Sprite="MPLobby\Generic\settings_icon_selected" ColorFactor="0.7" />
+      </Style>
+      <Style Name="Disabled">
+        <BrushLayer Name="Default" Sprite="MPLobby\Generic\settings_icon" ColorFactor="0.5" AlphaFactor="0.6" />
+      </Style>
+    </Styles>
+  </Brush>
+</Brushes>

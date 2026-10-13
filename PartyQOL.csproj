@@ -28,6 +28,10 @@
       <HintPath>D:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\bin\Win64_Shipping_Client\TaleWorlds.Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="TaleWorlds.Core.ViewModelCollection">
+      <HintPath>D:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\bin\Win64_Shipping_Client\TaleWorlds.Core.ViewModelCollection.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="TaleWorlds.Library">
       <HintPath>D:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\bin\Win64_Shipping_Client\TaleWorlds.Library.dll</HintPath>
       <Private>False</Private>
@@ -40,6 +44,34 @@
       <HintPath>D:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\bin\Win64_Shipping_Client\TaleWorlds.MountAndBlade.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="TaleWorlds.ObjectSystem">
+      <HintPath>D:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\bin\Win64_Shipping_Client\TaleWorlds.ObjectSystem.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.Engine">
+      <HintPath>D:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\bin\Win64_Shipping_Client\TaleWorlds.Engine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.InputSystem">
+      <HintPath>D:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\bin\Win64_Shipping_Client\TaleWorlds.InputSystem.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.GauntletUI">
+      <HintPath>D:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\bin\Win64_Shipping_Client\TaleWorlds.GauntletUI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.Engine.GauntletUI">
+      <HintPath>D:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\bin\Win64_Shipping_Client\TaleWorlds.Engine.GauntletUI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.ScreenSystem">
+      <HintPath>D:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\bin\Win64_Shipping_Client\TaleWorlds.ScreenSystem.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.TwoDimension">
+      <HintPath>D:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\bin\Win64_Shipping_Client\TaleWorlds.TwoDimension.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="0Harmony">
       <HintPath>D:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\Bannerlord.Harmony\bin\Win64_Shipping_Client\0Harmony.dll</HintPath>
       <Private>False</Private>
@@ -50,14 +82,30 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <GuiFiles Include="GUI\**\*" />
+  </ItemGroup>
+
+  <!-- Brushes must ship; empty GUI\Brushes would still be fine but keep deploy explicit. -->
+
   <PropertyGroup>
-    <BannerlordModuleDir>D:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\PartyQOL</BannerlordModuleDir>
+    <BannerlordGameModules>D:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\Modules</BannerlordGameModules>
+    <BannerlordModuleDir>$(BannerlordGameModules)\PartyQOL</BannerlordModuleDir>
   </PropertyGroup>
   <Target Name="DeployToBannerlord" AfterTargets="Build" Condition="'$(SkipBannerlordDeploy)' != 'true'">
     <MakeDir Directories="$(BannerlordModuleDir)\bin\Win64_Shipping_Client" />
     <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(BannerlordModuleDir)\bin\Win64_Shipping_Client" SkipUnchangedFiles="false" />
     <Copy SourceFiles="$(TargetDir)$(TargetName).pdb" DestinationFolder="$(BannerlordModuleDir)\bin\Win64_Shipping_Client" SkipUnchangedFiles="false" Condition="Exists('$(TargetDir)$(TargetName).pdb')" />
     <Copy SourceFiles="$(MSBuildProjectDirectory)\SubModule.xml" DestinationFolder="$(BannerlordModuleDir)" SkipUnchangedFiles="false" />
+    <RemoveDir Directories="$(BannerlordModuleDir)\GUI" />
+    <Copy SourceFiles="@(GuiFiles)" DestinationFolder="$(BannerlordModuleDir)\GUI\%(RecursiveDir)" SkipUnchangedFiles="false" />
+    <!-- Drop UIExtenderEx cached PartyScreen so prefab patches rebuild next launch. -->
+    <ItemGroup>
+      <_PartyScreenCache Include="$(BannerlordGameModules)\Bannerlord.UIExtenderEx\CompiledPrefabs\**\*PartyScreen*" />
+      <_PartyScreenCache Include="$(BannerlordGameModules)\Bannerlord.UIExtenderEx\CompiledPrefabs\**\*PartyTroopManagerPopUp*" />
+      <_PartyScreenCache Include="$(BannerlordGameModules)\Bannerlord.UIExtenderEx\CompiledPrefabs\**\*PartyTroopUpgradeItem*" />
+    </ItemGroup>
+    <Delete Files="@(_PartyScreenCache)" ContinueOnError="true" />
     <Message Importance="high" Text="Deployed $(TargetFileName) to $(BannerlordModuleDir)" />
   </Target>
 

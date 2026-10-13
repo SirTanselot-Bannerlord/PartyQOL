@@ -1,0 +1,5 @@
+<DiscardedRoot>
+  <!-- Gear opens a CAE-style centered Gauntlet popup (PartyQOLSortSettings), not an inline overlay. -->
+  <!-- Sits left of vanilla PartySortController (Right/Top, MarginRight 35, ~177 wide, MarginTop 57, 30 tall). -->
+  <ButtonWidget Id="PartyQOLSortSettingsButton" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="28" SuggestedHeight="28" HorizontalAlignment="Right" VerticalAlignment="Top" MarginTop="58" MarginRight="222" Brush="PartyQOL.Settings.Button" Command.Click="ExecuteOpenSortSettings" UpdateChildrenStates="true" />
+</DiscardedRoot>
