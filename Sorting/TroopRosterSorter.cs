@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using PartyQOL.Filtering;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
@@ -40,6 +42,8 @@ namespace PartyQOL.Sorting
                 logic.GetRoster(PartyScreenLogic.PartyRosterSide.Left, PartyScreenLogic.TroopType.Prisoner),
                 partyVM.OtherPartyPrisoners,
                 keys);
+
+            TroopFilterApplicator.ApplyPartyScreen(partyVM);
         }
 
         public static void SortPartyScreen(PartyVM partyVM)
@@ -125,15 +129,67 @@ namespace PartyQOL.Sorting
             int dir = key.Ascending ? 1 : -1;
             return key.Mode switch
             {
-                TroopSortMode.Type => ca.DefaultFormationClass.CompareTo(cb.DefaultFormationClass) * dir,
+                // Custom order lists: Desc = top of Details list first (matches Type/Culture defaults).
+                TroopSortMode.Type => CompareByOrder(TypeId(ca), TypeId(cb), TroopSortState.TypeOrder) * OrderListDir(key),
                 TroopSortMode.Tier => ca.Tier.CompareTo(cb.Tier) * dir,
+                TroopSortMode.MaxTier => TroopMaxTier.Get(ca).CompareTo(TroopMaxTier.Get(cb)) * dir,
                 TroopSortMode.Level => ca.Level.CompareTo(cb.Level) * dir,
-                TroopSortMode.Culture => string.Compare(CultureName(ca), CultureName(cb), StringComparison.OrdinalIgnoreCase) * dir,
+                TroopSortMode.Culture => CompareCulture(ca, cb, key),
                 TroopSortMode.Name => string.Compare(ca.Name?.ToString(), cb.Name?.ToString(), StringComparison.OrdinalIgnoreCase) * dir,
                 TroopSortMode.Count => a.Number.CompareTo(b.Number) * dir,
                 _ => 0
             };
         }
+
+        /// <summary>Details order chips: Descending keeps list-top first; Ascending flips.</summary>
+        private static int OrderListDir(SortKey key) => key.Ascending ? -1 : 1;
+
+        private static int CompareCulture(CharacterObject ca, CharacterObject cb, SortKey key)
+        {
+            IReadOnlyList<string> order = TroopSortState.CultureOrder;
+            if (order != null && order.Count > 0)
+            {
+                return CompareByOrder(CultureId(ca), CultureId(cb), order) * OrderListDir(key);
+            }
+
+            int dir = key.Ascending ? 1 : -1;
+            return string.Compare(CultureName(ca), CultureName(cb), StringComparison.OrdinalIgnoreCase) * dir;
+        }
+
+        private static int CompareByOrder(string a, string b, IReadOnlyList<string> order)
+        {
+            int ia = IndexInOrder(a, order);
+            int ib = IndexInOrder(b, order);
+            int cmp = ia.CompareTo(ib);
+            if (cmp != 0)
+            {
+                return cmp;
+            }
+
+            return string.Compare(a, b, StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static int IndexInOrder(string id, IReadOnlyList<string> order)
+        {
+            if (order == null || string.IsNullOrEmpty(id))
+            {
+                return int.MaxValue / 4;
+            }
+
+            for (int i = 0; i < order.Count; i++)
+            {
+                if (string.Equals(order[i], id, StringComparison.OrdinalIgnoreCase))
+                {
+                    return i;
+                }
+            }
+
+            return order.Count + 1;
+        }
+
+        private static string TypeId(CharacterObject character) => character.DefaultFormationClass.ToString();
+
+        private static string CultureId(CharacterObject character) => character.Culture?.StringId ?? string.Empty;
 
         private static int HeroRank(CharacterObject character)
         {

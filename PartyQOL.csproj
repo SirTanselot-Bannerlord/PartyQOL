@@ -72,6 +72,10 @@
       <HintPath>D:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\bin\Win64_Shipping_Client\TaleWorlds.TwoDimension.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="System.Numerics.Vectors">
+      <HintPath>D:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\bin\Win64_Shipping_Client\System.Numerics.Vectors.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="0Harmony">
       <HintPath>D:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\Bannerlord.Harmony\bin\Win64_Shipping_Client\0Harmony.dll</HintPath>
       <Private>False</Private>
@@ -104,6 +108,9 @@
       <_PartyScreenCache Include="$(BannerlordGameModules)\Bannerlord.UIExtenderEx\CompiledPrefabs\**\*PartyScreen*" />
       <_PartyScreenCache Include="$(BannerlordGameModules)\Bannerlord.UIExtenderEx\CompiledPrefabs\**\*PartyTroopManagerPopUp*" />
       <_PartyScreenCache Include="$(BannerlordGameModules)\Bannerlord.UIExtenderEx\CompiledPrefabs\**\*PartyTroopUpgradeItem*" />
+      <_PartyScreenCache Include="$(BannerlordGameModules)\Bannerlord.UIExtenderEx\CompiledPrefabs\**\*PartyComposition*" />
+      <_PartyScreenCache Include="$(BannerlordGameModules)\Bannerlord.UIExtenderEx\CompiledPrefabs\**\*PartyTroopTuple*" />
+      <_PartyScreenCache Include="$(BannerlordGameModules)\Bannerlord.UIExtenderEx\CompiledPrefabs\**\*PartyQOL*" />
     </ItemGroup>
     <Delete Files="@(_PartyScreenCache)" ContinueOnError="true" />
     <Message Importance="high" Text="Deployed $(TargetFileName) to $(BannerlordModuleDir)" />

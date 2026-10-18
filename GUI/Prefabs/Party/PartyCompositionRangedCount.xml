@@ -1,0 +1,4 @@
+<DiscardedRoot>
+  <TextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedWidth="45" SuggestedHeight="34" Brush="Party.Text.UpgradeAmount" Brush.FontSize="24" IntText="@RangedCount" IsHidden="@IsRangedCountFiltered" />
+  <TextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedWidth="45" SuggestedHeight="34" Brush="PartyQOL.Count.Filtered" Brush.FontSize="24" IntText="@RangedCount" IsVisible="@IsRangedCountFiltered" />
+</DiscardedRoot>

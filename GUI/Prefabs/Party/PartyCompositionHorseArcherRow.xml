@@ -1,0 +1,15 @@
+<DiscardedRoot>
+  <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginRight="14" Brush="PartyQOL.Composition.Button" Command.Click="ExecuteToggleHorseArcher" Command.AlternateClick="ExecuteIsolateHorseArcher">
+    <Children>
+      <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" StackLayout.LayoutMethod="HorizontalLeftToRight" DoNotAcceptEvents="true">
+        <Children>
+          <Widget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="30" SuggestedHeight="34" Sprite="PartyScreen\icon_troop_type_horse_archer" Color="#BE945BFF" IsHidden="@IsHorseArcherExcluded" />
+          <Widget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="30" SuggestedHeight="34" Sprite="PartyScreen\icon_troop_type_horse_archer" Color="#C83C3CFF" IsVisible="@IsHorseArcherExcluded" />
+          <TextWidget DoNotAcceptEvents="true" WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedWidth="45" SuggestedHeight="34" Brush="Party.Text.UpgradeAmount" Brush.FontSize="24" IntText="@HorseArcherCount" IsHidden="@IsHorseArcherCountFiltered" />
+          <TextWidget DoNotAcceptEvents="true" WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedWidth="45" SuggestedHeight="34" Brush="PartyQOL.Count.Filtered" Brush.FontSize="24" IntText="@HorseArcherCount" IsVisible="@IsHorseArcherCountFiltered" />
+          <HintWidget DataSource="{HorseArcherHint}" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" />
+        </Children>
+      </ListPanel>
+    </Children>
+  </ButtonWidget>
+</DiscardedRoot>

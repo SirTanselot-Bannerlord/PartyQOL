@@ -1,0 +1,4 @@
+<DiscardedRoot>
+  <Widget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="30" SuggestedHeight="34" Sprite="PartyScreen\icon_troop_type_cavalry" Color="#BE945BFF" IsHidden="@IsCavalryExcluded" />
+  <Widget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="30" SuggestedHeight="34" Sprite="PartyScreen\icon_troop_type_cavalry" Color="#C83C3CFF" IsVisible="@IsCavalryExcluded" />
+</DiscardedRoot>

@@ -1,0 +1,9 @@
+<DiscardedRoot>
+  <!-- Swap brushes instead of Brush.FontColor so Party.Text.Toggle stays untouched. -->
+  <Widget Id="MainPartyTroopsLabel" WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" HorizontalAlignment="Center" VerticalAlignment="Center" MarginLeft="5">
+    <Children>
+      <TextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" Brush="Party.Text.Toggle" Brush.TextHorizontalAlignment="Left" Text="@MainPartyTroopsLbl" IsHidden="@IsMainPartyTroopsLblFiltered" />
+      <TextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" Brush="PartyQOL.Text.Toggle.Filtered" Brush.TextHorizontalAlignment="Left" Text="@MainPartyTroopsLbl" IsVisible="@IsMainPartyTroopsLblFiltered" />
+    </Children>
+  </Widget>
+</DiscardedRoot>

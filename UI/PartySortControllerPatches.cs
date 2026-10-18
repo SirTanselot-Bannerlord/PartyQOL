@@ -10,8 +10,8 @@ using TaleWorlds.Localization;
 namespace PartyQOL.UI
 {
     /// <summary>
-    /// Replaces the vanilla "Custom" dropdown entry with saved PartyQOL sort presets (still TroopSortType.Custom,
-    /// which skips the built-in single-key comparer).
+    /// Keeps hidden vanilla sort controllers in sync if something still triggers them;
+    /// the visible Sort dropdown lives on PartyVMMixin.
     /// </summary>
     [HarmonyPatch(typeof(PartySortControllerVM))]
     internal static class PartySortControllerPatches
@@ -54,7 +54,7 @@ namespace PartyQOL.UI
             }
 
             TroopRosterSorter.SortPartyScreen(partyVm);
-            SyncOtherControllerSelection(partyVm, __instance, name);
+            PartyVMMixin.Current?.RefreshSortFilterSelectors();
         }
 
         internal static void RefreshPresetItems(PartyVM partyVm)
@@ -67,6 +67,7 @@ namespace PartyQOL.UI
             RebuildItems(partyVm.MainPartySortController);
             RebuildItems(partyVm.OtherPartySortController);
             SelectActivePreset(partyVm);
+            PartyVMMixin.Current?.RefreshSortFilterSelectors();
         }
 
         internal static void SelectActivePreset(PartyVM partyVm)
@@ -78,19 +79,6 @@ namespace PartyQOL.UI
 
             SelectByName(partyVm.MainPartySortController, SortPresets.ActiveName);
             SelectByName(partyVm.OtherPartySortController, SortPresets.ActiveName);
-        }
-
-        private static void SyncOtherControllerSelection(PartyVM partyVm, PartySortControllerVM source, string name)
-        {
-            if (partyVm.MainPartySortController != null && partyVm.MainPartySortController != source)
-            {
-                SelectByName(partyVm.MainPartySortController, name);
-            }
-
-            if (partyVm.OtherPartySortController != null && partyVm.OtherPartySortController != source)
-            {
-                SelectByName(partyVm.OtherPartySortController, name);
-            }
         }
 
         private static void RebuildItems(PartySortControllerVM controller)

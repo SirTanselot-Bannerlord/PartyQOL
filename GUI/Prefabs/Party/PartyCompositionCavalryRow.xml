@@ -1,0 +1,15 @@
+<DiscardedRoot>
+  <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginRight="14" Brush="PartyQOL.Composition.Button" Command.Click="ExecuteToggleCavalry" Command.AlternateClick="ExecuteIsolateCavalry">
+    <Children>
+      <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" StackLayout.LayoutMethod="HorizontalLeftToRight" DoNotAcceptEvents="true">
+        <Children>
+          <Widget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="30" SuggestedHeight="34" Sprite="PartyScreen\icon_troop_type_cavalry" Color="#BE945BFF" IsHidden="@IsCavalryExcluded" />
+          <Widget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="30" SuggestedHeight="34" Sprite="PartyScreen\icon_troop_type_cavalry" Color="#C83C3CFF" IsVisible="@IsCavalryExcluded" />
+          <TextWidget DoNotAcceptEvents="true" WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedWidth="45" SuggestedHeight="34" Brush="Party.Text.UpgradeAmount" Brush.FontSize="24" IntText="@CavalryCount" IsHidden="@IsCavalryCountFiltered" />
+          <TextWidget DoNotAcceptEvents="true" WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedWidth="45" SuggestedHeight="34" Brush="PartyQOL.Count.Filtered" Brush.FontSize="24" IntText="@CavalryCount" IsVisible="@IsCavalryCountFiltered" />
+          <HintWidget DataSource="{CavalryHint}" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" />
+        </Children>
+      </ListPanel>
+    </Children>
+  </ButtonWidget>
+</DiscardedRoot>

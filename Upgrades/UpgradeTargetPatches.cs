@@ -1,7 +1,10 @@
 using HarmonyLib;
+using PartyQOL.UI;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.ViewModelCollection.Party;
+using TaleWorlds.CampaignSystem.ViewModelCollection.Party.PartyTroopManagerPopUp;
 using TaleWorlds.InputSystem;
+using TaleWorlds.Library;
 
 namespace PartyQOL.Upgrades
 {
@@ -23,22 +26,35 @@ namespace PartyQOL.Upgrades
                 return false;
             }
 
-            store.SetPreferred(original, target);
-            ApplyHighlightToSiblingTargets(__instance, original);
+            store.TogglePreferred(original, target);
+            RefreshHighlightsFor(original);
             return false;
         }
 
-        private static void ApplyHighlightToSiblingTargets(UpgradeTargetVM clicked, CharacterObject original)
+        private static void RefreshHighlightsFor(CharacterObject original)
         {
             DesiredUpgradePathBehavior store = DesiredUpgradePathBehavior.Instance;
-            if (store == null || original?.UpgradeTargets == null)
+            PartyVM partyVm = PartyVMMixin.Current?.Party;
+            MBBindingList<PartyTroopManagerItemVM> troops = partyVm?.UpgradePopUp?.Troops;
+            if (store == null || troops == null)
             {
-                clicked.IsHighlighted = true;
                 return;
             }
 
-            // Highlight only the preferred slot; clear siblings if we can reach them via PartyCharacter.
-            clicked.IsHighlighted = store.IsPreferred(original, Traverse.Create(clicked).Field("_upgradeTarget").GetValue<CharacterObject>());
+            foreach (PartyTroopManagerItemVM row in troops)
+            {
+                PartyCharacterVM characterVm = row?.PartyCharacter;
+                if (characterVm?.Character != original || characterVm.Upgrades == null)
+                {
+                    continue;
+                }
+
+                foreach (UpgradeTargetVM upgrade in characterVm.Upgrades)
+                {
+                    CharacterObject upgradeTarget = Traverse.Create(upgrade).Field("_upgradeTarget").GetValue<CharacterObject>();
+                    upgrade.IsHighlighted = store.IsPreferred(original, upgradeTarget);
+                }
+            }
         }
     }
 

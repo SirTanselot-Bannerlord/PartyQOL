@@ -4,6 +4,7 @@ using HarmonyLib;
 using PartyQOL.Upgrades;
 using TaleWorlds.CampaignSystem.ViewModelCollection.Party;
 using TaleWorlds.CampaignSystem.ViewModelCollection.Party.PartyTroopManagerPopUp;
+using TaleWorlds.Core.ViewModelCollection.Information;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
 
@@ -12,24 +13,25 @@ namespace PartyQOL.UI
     [ViewModelMixin]
     public sealed class PartyUpgradeTroopVMMixin : BaseViewModelMixin<PartyUpgradeTroopVM>
     {
-        private string _autoUpgradeText;
+        private HintViewModel _upgradeAllHint;
 
         public PartyUpgradeTroopVMMixin(PartyUpgradeTroopVM vm)
             : base(vm)
         {
-            _autoUpgradeText = new TextObject("{=pqol_auto_up}Auto Upgrade").ToString();
+            _upgradeAllHint = new HintViewModel(new TextObject(
+                "{=pqol_upgrade_all_hint}Upgrades every ready troop that has a single path, or a preferred path. Ctrl + right-click an upgrade icon to set or clear the preferred path.\n\nRBM: Shift-click to only perform 0-cost upgrades."));
         }
 
         [DataSourceProperty]
-        public string AutoUpgradeText
+        public HintViewModel UpgradeAllHint
         {
-            get => _autoUpgradeText;
+            get => _upgradeAllHint;
             set
             {
-                if (_autoUpgradeText != value)
+                if (_upgradeAllHint != value)
                 {
-                    _autoUpgradeText = value;
-                    OnPropertyChangedWithValue(value, nameof(AutoUpgradeText));
+                    _upgradeAllHint = value;
+                    OnPropertyChangedWithValue(value, nameof(UpgradeAllHint));
                 }
             }
         }
@@ -38,7 +40,7 @@ namespace PartyQOL.UI
         public void ExecuteAutoUpgrade()
         {
             PartyUpgradeTroopVM popup = ViewModel;
-            if (popup == null || !popup.IsUpgradePopUp || !popup.IsOpen)
+            if (popup == null || !popup.IsOpen)
             {
                 return;
             }
@@ -46,11 +48,15 @@ namespace PartyQOL.UI
             PartyVM partyVm = Traverse.Create(popup).Field("_partyVM").GetValue<PartyVM>();
             if (partyVm == null)
             {
+                partyVm = PartyVMMixin.Current?.Party;
+            }
+
+            if (partyVm == null)
+            {
                 return;
             }
 
-            bool freeOnly = !AutoUpgradeHelper.IsControlDown();
-            AutoUpgradeHelper.Run(partyVm, freeOnly);
+            AutoUpgradeHelper.Run(partyVm, zeroCostOnly: AutoUpgradeHelper.IsShiftDown());
         }
     }
 }

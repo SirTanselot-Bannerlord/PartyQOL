@@ -1,0 +1,4 @@
+<DiscardedRoot>
+  <Widget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="30" SuggestedHeight="34" Sprite="PartyScreen\icon_troop_type_horse_archer" Color="#BE945BFF" IsHidden="@IsHorseArcherExcluded" />
+  <Widget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="30" SuggestedHeight="34" Sprite="PartyScreen\icon_troop_type_horse_archer" Color="#C83C3CFF" IsVisible="@IsHorseArcherExcluded" />
+</DiscardedRoot>

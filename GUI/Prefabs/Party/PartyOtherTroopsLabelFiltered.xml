@@ -1,0 +1,8 @@
+<DiscardedRoot>
+  <Widget Id="OtherPartyTroopsLabel" WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" HorizontalAlignment="Center" VerticalAlignment="Center" MarginLeft="5">
+    <Children>
+      <TextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" Brush="Party.Text.Toggle" Brush.TextHorizontalAlignment="Left" Text="@OtherPartyTroopsLbl" IsHidden="@IsOtherPartyTroopsLblFiltered" />
+      <TextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" Brush="PartyQOL.Text.Toggle.Filtered" Brush.TextHorizontalAlignment="Left" Text="@OtherPartyTroopsLbl" IsVisible="@IsOtherPartyTroopsLblFiltered" />
+    </Children>
+  </Widget>
+</DiscardedRoot>

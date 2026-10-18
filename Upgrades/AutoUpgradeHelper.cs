@@ -11,15 +11,16 @@ namespace PartyQOL.Upgrades
 {
     public static class AutoUpgradeHelper
     {
-        public static bool IsControlDown()
-        {
-            return Input.IsKeyDown(InputKey.LeftControl) || Input.IsKeyDown(InputKey.RightControl);
-        }
+        public static bool IsShiftDown() =>
+            Input.IsKeyDown(InputKey.LeftShift) || Input.IsKeyDown(InputKey.RightShift);
 
         /// <summary>
-        /// Click: goldCost == 0 only. Ctrl+click: any affordable ready upgrade via ExecuteUpgrade.
+        /// Upgrades every ready troop that has a single path, or a Ctrl+RMB preferred path.
+        /// Multi-path troops with no preference are skipped.
+        /// When <paramref name="zeroCostOnly"/> is true, upgrades one-at-a-time while
+        /// GetUpgradeGoldCost stays 0 (spoils can make only a prefix of the stack free).
         /// </summary>
-        public static void Run(PartyVM partyVM, bool freeOnly)
+        public static void Run(PartyVM partyVM, bool zeroCostOnly = false)
         {
             if (partyVM?.UpgradePopUp?.Troops == null)
             {
@@ -33,49 +34,143 @@ namespace PartyQOL.Upgrades
                 return;
             }
 
-            // Snapshot so list mutations mid-loop don't skip rows unpredictably.
-            List<PartyTroopManagerItemVM> rows = partyVM.UpgradePopUp.Troops.ToList();
-            foreach (PartyTroopManagerItemVM row in rows)
+            var jobs = new List<(string CharacterId, int UpgradeIndex)>();
+            foreach (PartyTroopManagerItemVM row in partyVM.UpgradePopUp.Troops.ToList())
             {
                 PartyCharacterVM troop = row?.PartyCharacter;
                 CharacterObject character = troop?.Character;
-                if (character == null || character.IsHero)
+                if (character == null || character.IsHero || string.IsNullOrEmpty(character.StringId))
                 {
                     continue;
                 }
 
-                int index = store?.ResolvePreferredIndex(character) ?? -1;
+                int index = ResolveUpgradeIndex(character, store);
                 if (index < 0)
                 {
-                    // Single-path troops without an explicit preference still upgrade.
-                    if (character.UpgradeTargets != null && character.UpgradeTargets.Length == 1)
+                    continue;
+                }
+
+                jobs.Add((character.StringId, index));
+            }
+
+            if (jobs.Count == 0)
+            {
+                return;
+            }
+
+            bool previousEntire = partyVM.IsEntireStackModifierActive;
+            bool previousFive = partyVM.IsFiveStackModifierActive;
+            partyVM.IsFiveStackModifierActive = false;
+            try
+            {
+                foreach ((string characterId, int upgradeIndex) in jobs)
+                {
+                    if (zeroCostOnly)
                     {
-                        index = 0;
+                        UpgradeZeroCostPrefix(partyVM, party, characterId, upgradeIndex);
                     }
                     else
                     {
-                        continue;
+                        UpgradeFullStack(partyVM, characterId, upgradeIndex);
                     }
                 }
+            }
+            finally
+            {
+                partyVM.IsEntireStackModifierActive = previousEntire;
+                partyVM.IsFiveStackModifierActive = previousFive;
+            }
+        }
 
-                if (troop.Upgrades == null || index >= troop.Upgrades.Count)
+        private static void UpgradeFullStack(PartyVM partyVm, string characterId, int upgradeIndex)
+        {
+            partyVm.IsEntireStackModifierActive = true;
+            PartyCharacterVM troop = FindUpgradeableTroop(partyVm, characterId);
+            if (troop?.Upgrades == null || upgradeIndex >= troop.Upgrades.Count)
+            {
+                return;
+            }
+
+            UpgradeTargetVM targetVm = troop.Upgrades[upgradeIndex];
+            if (targetVm == null || targetVm.AvailableUpgrades <= 0 || !targetVm.IsAvailable)
+            {
+                return;
+            }
+
+            partyVm.ExecuteUpgrade(troop, upgradeIndex, targetVm.AvailableUpgrades);
+        }
+
+        /// <summary>
+        /// Spoils / mounts can make only the first N upgrades free. Re-check gold cost after each unit.
+        /// </summary>
+        private static void UpgradeZeroCostPrefix(
+            PartyVM partyVm,
+            PartyBase party,
+            string characterId,
+            int upgradeIndex)
+        {
+            partyVm.IsEntireStackModifierActive = false;
+
+            // Hard cap: AvailableUpgrades at start; stop earlier when cost becomes non-zero.
+            for (int safety = 0; safety < 512; safety++)
+            {
+                PartyCharacterVM troop = FindUpgradeableTroop(partyVm, characterId);
+                CharacterObject character = troop?.Character;
+                if (character == null || troop.Upgrades == null || upgradeIndex >= troop.Upgrades.Count)
                 {
-                    continue;
+                    return;
                 }
 
-                UpgradeTargetVM targetVm = troop.Upgrades[index];
+                UpgradeTargetVM targetVm = troop.Upgrades[upgradeIndex];
                 if (targetVm == null || targetVm.AvailableUpgrades <= 0 || !targetVm.IsAvailable)
                 {
-                    continue;
+                    return;
                 }
 
-                if (freeOnly && character.GetUpgradeGoldCost(party, index) != 0)
+                if (character.GetUpgradeGoldCost(party, upgradeIndex) != 0)
                 {
-                    continue;
+                    return;
                 }
 
-                partyVM.ExecuteUpgrade(troop, index, targetVm.AvailableUpgrades);
+                partyVm.ExecuteUpgrade(troop, upgradeIndex, 1);
             }
+        }
+
+        private static PartyCharacterVM FindUpgradeableTroop(PartyVM partyVm, string characterId)
+        {
+            MBBindingList<PartyTroopManagerItemVM> troops = partyVm?.UpgradePopUp?.Troops;
+            if (troops == null)
+            {
+                return null;
+            }
+
+            foreach (PartyTroopManagerItemVM row in troops)
+            {
+                PartyCharacterVM troop = row?.PartyCharacter;
+                if (troop?.Character != null
+                    && string.Equals(troop.Character.StringId, characterId, System.StringComparison.Ordinal)
+                    && troop.NumOfReadyToUpgradeTroops > 0)
+                {
+                    return troop;
+                }
+            }
+
+            return null;
+        }
+
+        private static int ResolveUpgradeIndex(CharacterObject character, DesiredUpgradePathBehavior store)
+        {
+            if (character.UpgradeTargets == null || character.UpgradeTargets.Length == 0)
+            {
+                return -1;
+            }
+
+            if (character.UpgradeTargets.Length == 1)
+            {
+                return 0;
+            }
+
+            return store?.ResolvePreferredIndex(character) ?? -1;
         }
     }
 }

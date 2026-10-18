@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using TaleWorlds.CampaignSystem;
-using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
 
@@ -41,11 +40,42 @@ namespace PartyQOL.Upgrades
             }
 
             _paths[source.StringId] = target.StringId;
-            string message = new TextObject("{=pqol_pref_set}Preferred upgrade set: {SOURCE} -> {TARGET}")
+            string message = new TextObject("{=pqol_pref_set}Preferred upgrade set: {SOURCE} → {TARGET}")
                 .SetTextVariable("SOURCE", source.Name)
                 .SetTextVariable("TARGET", target.Name)
                 .ToString();
             InformationManager.DisplayMessage(new InformationMessage(message));
+        }
+
+        public void ClearPreferred(CharacterObject source)
+        {
+            if (source == null || string.IsNullOrEmpty(source.StringId) || _paths == null)
+            {
+                return;
+            }
+
+            if (!_paths.Remove(source.StringId))
+            {
+                return;
+            }
+
+            string message = new TextObject("{=pqol_pref_clear}Preferred upgrade cleared: {SOURCE}")
+                .SetTextVariable("SOURCE", source.Name)
+                .ToString();
+            InformationManager.DisplayMessage(new InformationMessage(message));
+        }
+
+        /// <summary>Sets preference, or clears it if this target is already preferred.</summary>
+        public bool TogglePreferred(CharacterObject source, CharacterObject target)
+        {
+            if (IsPreferred(source, target))
+            {
+                ClearPreferred(source);
+                return false;
+            }
+
+            SetPreferred(source, target);
+            return true;
         }
 
         public bool TryGetPreferredTargetId(CharacterObject source, out string targetId)

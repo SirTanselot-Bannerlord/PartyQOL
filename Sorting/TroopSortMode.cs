@@ -7,6 +7,7 @@ namespace PartyQOL.Sorting
         Level = 2,
         Culture = 3,
         Name = 4,
-        Count = 5
+        Count = 5,
+        MaxTier = 6
     }
 }

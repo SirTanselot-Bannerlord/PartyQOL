@@ -1,5 +1,22 @@
 <Brushes>
   <!-- Real MP lobby settings cog; atlas loaded at runtime via ui_mplobby (not present in campaign by default). -->
+  <!-- Composition rows: same click as DefaultBrush, also on right-click (AlternateClick). -->
+  <Brush Name="PartyQOL.Composition.Button">
+    <Layers>
+    </Layers>
+    <Styles>
+      <Style Name="Default" />
+    </Styles>
+    <SoundProperties>
+      <StateSounds>
+      </StateSounds>
+      <EventSounds>
+        <EventSound EventName="Click" Audio="default" />
+        <EventSound EventName="AlternateClick" Audio="default" />
+      </EventSounds>
+    </SoundProperties>
+  </Brush>
+
   <Brush Name="PartyQOL.Settings.Button">
     <Layers>
       <BrushLayer Name="Default" Sprite="MPLobby\Generic\settings_icon" Color="#FEC157FF" />
@@ -19,4 +36,76 @@
       </Style>
     </Styles>
   </Brush>
+
+  <!--
+    Standalone filtered-count brush (do NOT BaseBrush Party.Text.UpgradeAmount —
+    its Style.FontColor would keep the gold and override layer red).
+  -->
+  <Brush Name="PartyQOL.Count.Filtered" Font="Galahad">
+    <Layers>
+      <BrushLayer Name="Default" />
+    </Layers>
+    <Styles>
+      <Style Name="Default" FontColor="#C83C3CFF" TextGlowRadius="0" TextBlur="0" TextShadowOffset="1" FontSize="24">
+        <BrushLayer Name="Default" />
+      </Style>
+    </Styles>
+  </Brush>
+
+  <Brush Name="PartyQOL.Text.Toggle.Filtered" Font="Galahad">
+    <Layers>
+      <BrushLayer Name="Default" />
+    </Layers>
+    <Styles>
+      <Style Name="Default" FontColor="#C83C3CFF" TextGlowRadius="0.1" TextBlur="1" TextShadowOffset="0" TextOutlineAmount="0.1" TextGlowColor="#00000055" FontSize="32">
+        <BrushLayer Name="Default" />
+      </Style>
+    </Styles>
+  </Brush>
+
+  <!-- Preferred upgrade path: same frame as tutorial highlight, but no pulse animation. -->
+  <Brush Name="PartyQOL.Upgrade.PreferredHighlight">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="highlight_gradient_9" Color="#FEC157FF" />
+    </Layers>
+    <Styles>
+      <Style Name="Default">
+        <BrushLayer Name="Default" AlphaFactor="1" />
+      </Style>
+    </Styles>
+  </Brush>
+
+  <!--
+    Single chevron for Upgrade All (triplicated in PartyAutoUpgradeButton).
+    Same outline recipe as CAE Cae.Upgrade, tinted to party popup parchment (#F9EDD9).
+  -->
+  <Brush Name="PartyQOL.Upgrade.Icon">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="PartyScreen\upgrade_icon" XOffset="2" YOffset="0" SaturationFactor="-100" ValueFactor="-100" AlphaFactor="0.55" />
+      <BrushLayer Name="Outline1" Sprite="PartyScreen\upgrade_icon" XOffset="-2" YOffset="0" SaturationFactor="-100" ValueFactor="-100" AlphaFactor="0.55" />
+      <BrushLayer Name="Outline2" Sprite="PartyScreen\upgrade_icon" XOffset="0" YOffset="2" SaturationFactor="-100" ValueFactor="-100" AlphaFactor="0.55" />
+      <BrushLayer Name="Outline3" Sprite="PartyScreen\upgrade_icon" XOffset="0" YOffset="-2" SaturationFactor="-100" ValueFactor="-100" AlphaFactor="0.55" />
+      <BrushLayer Name="Outline4" Sprite="PartyScreen\upgrade_icon" XOffset="1.5" YOffset="1.5" SaturationFactor="-100" ValueFactor="-100" AlphaFactor="0.55" />
+      <BrushLayer Name="Outline5" Sprite="PartyScreen\upgrade_icon" XOffset="-1.5" YOffset="1.5" SaturationFactor="-100" ValueFactor="-100" AlphaFactor="0.55" />
+      <BrushLayer Name="Outline6" Sprite="PartyScreen\upgrade_icon" XOffset="1.5" YOffset="-1.5" SaturationFactor="-100" ValueFactor="-100" AlphaFactor="0.55" />
+      <BrushLayer Name="Outline7" Sprite="PartyScreen\upgrade_icon" XOffset="-1.5" YOffset="-1.5" SaturationFactor="-100" ValueFactor="-100" AlphaFactor="0.55" />
+      <BrushLayer Name="Icon" Sprite="PartyScreen\upgrade_icon" Color="#F9EDD9FF" SaturationFactor="-100" ValueFactor="100" AlphaFactor="0.9" />
+    </Layers>
+    <Styles>
+      <Style Name="Default">
+        <BrushLayer Name="Icon" AlphaFactor="0.9" />
+      </Style>
+      <Style Name="Hovered">
+        <BrushLayer Name="Icon" AlphaFactor="1" />
+      </Style>
+      <Style Name="Pressed">
+        <BrushLayer Name="Icon" AlphaFactor="0.65" />
+      </Style>
+      <Style Name="Disabled">
+        <BrushLayer Name="Icon" AlphaFactor="0.4" />
+      </Style>
+    </Styles>
+  </Brush>
 </Brushes>
+
+

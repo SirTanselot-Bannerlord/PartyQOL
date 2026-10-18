@@ -40,6 +40,7 @@ namespace PartyQOL
         protected override void OnApplicationTick(float dt)
         {
             base.OnApplicationTick(dt);
+            UI.PartyVMMixin.TickQueuedReopen();
             if (PopupHost.IsAnyOpen)
             {
                 PopupHost.Tick();

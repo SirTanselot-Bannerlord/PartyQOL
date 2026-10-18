@@ -1,8 +1,10 @@
+using System.Collections.Generic;
 using System.Linq;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
+using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
@@ -155,7 +157,71 @@ namespace PartyQOL
 
         public static bool IsSelectableForPartyScreen(MobileParty party)
         {
-            return IsManageableOwnedParty(party) && IsInPlayerVicinity(party);
+            return IsLocalTransferPool(party);
+        }
+
+        /// <summary>
+        /// Left-panel pools for troop transfer (not absorb). Clan war parties nearby, plus
+        /// the current settlement garrison when the player can manage it.
+        /// </summary>
+        public static bool IsLocalTransferPool(MobileParty party)
+        {
+            if (party == null || party == MobileParty.MainParty || !party.IsActive)
+            {
+                return false;
+            }
+
+            if (IsManageableOwnedParty(party))
+            {
+                return IsInPlayerVicinity(party);
+            }
+
+            return IsManageableGarrisonAtPlayerLocation(party);
+        }
+
+        public static bool IsManageableGarrisonAtPlayerLocation(MobileParty party)
+        {
+            if (party == null || !party.IsGarrison || !party.IsActive)
+            {
+                return false;
+            }
+
+            Settlement settlement = MobileParty.MainParty?.CurrentSettlement;
+            MobileParty garrison = settlement?.Town?.GarrisonParty;
+            if (garrison == null || garrison != party)
+            {
+                return false;
+            }
+
+            return settlement.OwnerClan == Clan.PlayerClan;
+        }
+
+        /// <summary>
+        /// Player-owned settlement garrison at the player's location, creating one if missing.
+        /// Empty garrisons are often destroyed when the party screen closes as cancel (dual-side
+        /// reopen); vanilla recreates via <see cref="Settlement.AddGarrisonParty"/>.
+        /// </summary>
+        public static MobileParty GetManageableGarrisonAtPlayerLocation()
+        {
+            Settlement settlement = MobileParty.MainParty?.CurrentSettlement;
+            if (settlement?.Town == null || settlement.OwnerClan != Clan.PlayerClan)
+            {
+                return null;
+            }
+
+            MobileParty garrison = settlement.Town.GarrisonParty;
+            if (garrison == null)
+            {
+                settlement.AddGarrisonParty();
+                garrison = settlement.Town.GarrisonParty;
+            }
+
+            if (garrison == null || !garrison.IsActive)
+            {
+                return null;
+            }
+
+            return garrison;
         }
 
         public static MobileParty[] GetManageableOwnedParties()
@@ -168,10 +234,76 @@ namespace PartyQOL
 
         public static MobileParty[] GetSelectablePartiesForPartyScreen()
         {
-            return MobileParty.All
-                .Where(IsSelectableForPartyScreen)
+            return GetLocalTransferPoolsForPartyScreen();
+        }
+
+        public static MobileParty[] GetLocalTransferPoolsForPartyScreen()
+        {
+            List<MobileParty> pools = MobileParty.All
+                .Where(p => IsManageableOwnedParty(p) && IsInPlayerVicinity(p))
                 .OrderBy(p => p.Name?.ToString() ?? string.Empty)
-                .ToArray();
+                .ToList();
+
+            MobileParty garrison = GetManageableGarrisonAtPlayerLocation();
+            if (garrison != null && !pools.Contains(garrison))
+            {
+                pools.Insert(0, garrison);
+            }
+
+            return pools.ToArray();
+        }
+
+        /// <summary>Main party or any local transfer pool (companion / garrison).</summary>
+        public static bool IsTransferSideParty(MobileParty party)
+        {
+            return party != null
+                   && (party == MobileParty.MainParty || IsLocalTransferPool(party));
+        }
+
+        /// <summary>
+        /// Choices for a side dropdown. Optionally includes MainParty; always skips <paramref name="exclude"/>.
+        /// </summary>
+        public static MobileParty[] GetTransferSideChoices(MobileParty exclude = null, bool includeMainParty = true)
+        {
+            var list = new List<MobileParty>();
+            if (includeMainParty
+                && MobileParty.MainParty != null
+                && MobileParty.MainParty != exclude)
+            {
+                list.Add(MobileParty.MainParty);
+            }
+
+            foreach (MobileParty pool in GetLocalTransferPoolsForPartyScreen())
+            {
+                if (pool != null && pool != exclude && !list.Contains(pool))
+                {
+                    list.Add(pool);
+                }
+            }
+
+            return list.ToArray();
+        }
+
+        public static TextObject GetTransferPoolLabel(MobileParty party)
+        {
+            if (party == null)
+            {
+                return new TextObject("{=pqol_dismiss}Dismiss");
+            }
+
+            if (party.IsGarrison)
+            {
+                Settlement settlement = party.CurrentSettlement
+                                        ?? MobileParty.MainParty?.CurrentSettlement;
+                if (settlement?.Party?.PrisonRoster != null)
+                {
+                    return new TextObject("{=pqol_pool_garrison_dungeon}Garrison & Prison");
+                }
+
+                return new TextObject("{=pqol_pool_garrison}Garrison");
+            }
+
+            return party.Name ?? TextObject.GetEmpty();
         }
     }
 }

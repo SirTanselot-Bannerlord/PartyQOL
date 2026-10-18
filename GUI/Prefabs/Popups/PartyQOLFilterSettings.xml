@@ -1,0 +1,279 @@
+<Prefab>
+  <Window>
+    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
+      <Children>
+        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#000000FF" AlphaFactor="0.6" />
+        <ButtonWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.Click="ExecuteCancel" />
+
+        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1100" SuggestedHeight="680" HorizontalAlignment="Center" VerticalAlignment="Center">
+          <Children>
+            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="StdAssets\Popup\canvas" />
+
+            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="42" MarginTop="14" Brush="Party.Text.Name" Brush.FontSize="28" Brush.TextHorizontalAlignment="Center" Text="@TitleText" />
+            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="40" MarginTop="54" MarginLeft="36" MarginRight="36" Brush="Party.Text.TroopInfo" Brush.FontSize="16" Brush.TextHorizontalAlignment="Center" Text="@HelpText" />
+            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="23" MarginTop="98" MarginLeft="36" MarginRight="36" Sprite="StdAssets\Popup\divider" />
+
+            <!-- Profiles -->
+            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="220" SuggestedHeight="380" MarginLeft="36" MarginTop="130">
+              <Children>
+                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="28" Brush="Party.Text.Name" Brush.FontSize="20" Text="@ProfilesTitle" />
+                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginTop="32" Sprite="BlankWhiteSquare_9" Color="#000000FF" AlphaFactor="0.3" ClipContents="true">
+                  <Children>
+                    <ListPanel DataSource="{Profiles}" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginLeft="6" MarginRight="6" MarginTop="6" MarginBottom="6" StackLayout.LayoutMethod="VerticalTopToBottom">
+                      <ItemTemplate>
+                        <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="36" MarginBottom="4" Brush="Popup.SelectionElement.Tuple" IsSelected="@IsSelected" Command.Click="ExecuteSelect">
+                          <Children>
+                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="10" MarginRight="8" Brush="SPOptions.Dropdown.Center.Text" Brush.FontSize="18" Brush.TextHorizontalAlignment="Left" Text="@Name" />
+                          </Children>
+                        </ButtonWidget>
+                      </ItemTemplate>
+                    </ListPanel>
+                  </Children>
+                </Widget>
+              </Children>
+            </Widget>
+
+            <!-- Criteria with summary lines -->
+            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="380" SuggestedHeight="380" MarginLeft="276" MarginTop="130">
+              <Children>
+                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="28" Brush="Party.Text.Name" Brush.FontSize="20" Text="@CriteriaTitle" />
+                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginTop="32" Sprite="BlankWhiteSquare_9" Color="#000000FF" AlphaFactor="0.3" ClipContents="true">
+                  <Children>
+                    <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" AutoHideScrollBars="false" ClipRect="CriteriaClipRect" InnerPanel="CriteriaClipRect\CriteriaChipList" VerticalScrollbar="..\CriteriaScrollbar" MouseScrollSpeed="40">
+                      <Children>
+                        <Widget Id="CriteriaClipRect" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true" MarginRight="12">
+                          <Children>
+                            <ListPanel Id="CriteriaChipList" DataSource="{CriteriaChips}" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginLeft="8" MarginRight="4" MarginTop="8" MarginBottom="8" StackLayout.LayoutMethod="VerticalTopToBottom">
+                              <ItemTemplate>
+                                <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="56" MarginBottom="4" Brush="Popup.SelectionElement.Tuple" IsSelected="@IsSelected" Command.Click="ExecuteSelect">
+                                  <Children>
+                                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="26" MarginLeft="12" MarginRight="8" MarginTop="4" Brush="SPOptions.Dropdown.Center.Text" Brush.FontSize="20" Brush.TextHorizontalAlignment="Left" Text="@Title" DoNotAcceptEvents="true" />
+                                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22" MarginLeft="12" MarginRight="8" MarginTop="28" Brush="Party.Text.TroopInfo" Brush.FontSize="15" Brush.TextHorizontalAlignment="Left" Text="@SummaryText" DoNotAcceptEvents="true" />
+                                  </Children>
+                                </ButtonWidget>
+                              </ItemTemplate>
+                            </ListPanel>
+                          </Children>
+                        </Widget>
+                      </Children>
+                    </ScrollablePanel>
+                    <ScrollbarWidget Id="CriteriaScrollbar" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="8" HorizontalAlignment="Right" MarginTop="2" MarginBottom="2" AlignmentAxis="Vertical" Handle="CriteriaScrollbarHandle" MaxValue="100" MinValue="0">
+                      <Children>
+                        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="4" HorizontalAlignment="Center" Sprite="BlankWhiteSquare_9" AlphaFactor="0.2" Color="#5A4033FF" />
+                        <ImageWidget Id="CriteriaScrollbarHandle" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="8" SuggestedHeight="10" HorizontalAlignment="Center" Brush="FaceGen.Scrollbar.Handle" />
+                      </Children>
+                    </ScrollbarWidget>
+                  </Children>
+                </Widget>
+              </Children>
+            </Widget>
+
+            <!-- Details -->
+            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="380" SuggestedHeight="380" MarginLeft="676" MarginTop="130" IsVisible="@HasSelectedCriterion">
+              <Children>
+                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="28" Brush="Party.Text.Name" Brush.FontSize="20" Text="@DetailsTitle" />
+                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginTop="32" Sprite="BlankWhiteSquare_9" Color="#000000FF" AlphaFactor="0.3" ClipContents="true">
+                  <Children>
+                    <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="10" MarginRight="10" MarginTop="10" MarginBottom="10" StackLayout.LayoutMethod="VerticalTopToBottom">
+                      <Children>
+                        <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="40" MarginBottom="8" Brush="Popup.SelectionElement.Tuple" Command.Click="ExecuteToggleCriterionEnabled" UpdateChildrenStates="true">
+                          <Children>
+                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="12" MarginRight="8" Brush="SPOptions.Dropdown.Center.Text" Brush.FontSize="18" Text="@EnabledText" DoNotAcceptEvents="true" />
+                            <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="40" HorizontalAlignment="Right" MarginRight="10" Brush="SPOptions.Dropdown.Center.Text" Brush.FontSize="18" Brush.TextHorizontalAlignment="Right" Text="On" IsVisible="@CriterionEnabled" DoNotAcceptEvents="true" />
+                            <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="40" HorizontalAlignment="Right" MarginRight="10" Brush="SPOptions.Dropdown.Center.Text" Brush.FontSize="18" Brush.TextHorizontalAlignment="Right" Text="Off" IsHidden="@CriterionEnabled" DoNotAcceptEvents="true" />
+                          </Children>
+                        </ButtonWidget>
+
+                        <!-- parity-ok: wounded/healthy mode is filter-only -->
+                        <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" IsVisible="@ShowConditionDetails" StackLayout.LayoutMethod="VerticalTopToBottom">
+                          <Children>
+                            <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="36" MarginBottom="4" Brush="Popup.SelectionElement.Tuple" Command.Click="ExecuteConditionOff" IsSelected="@ConditionIsOff" UpdateChildrenStates="true">
+                              <Children>
+                                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="12" MarginRight="8" Brush="SPOptions.Dropdown.Center.Text" Brush.FontSize="18" Text="Off" DoNotAcceptEvents="true" />
+                              </Children>
+                            </ButtonWidget>
+                            <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="36" MarginBottom="4" Brush="Popup.SelectionElement.Tuple" Command.Click="ExecuteConditionWounded" IsSelected="@ConditionIsWounded" UpdateChildrenStates="true">
+                              <Children>
+                                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="12" MarginRight="8" Brush="SPOptions.Dropdown.Center.Text" Brush.FontSize="18" Text="Wounded" DoNotAcceptEvents="true" />
+                              </Children>
+                            </ButtonWidget>
+                            <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="36" MarginBottom="4" Brush="Popup.SelectionElement.Tuple" Command.Click="ExecuteConditionHealthy" IsSelected="@ConditionIsHealthy" UpdateChildrenStates="true">
+                              <Children>
+                                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="12" MarginRight="8" Brush="SPOptions.Dropdown.Center.Text" Brush.FontSize="18" Text="Healthy" DoNotAcceptEvents="true" />
+                              </Children>
+                            </ButtonWidget>
+                          </Children>
+                        </ListPanel>
+
+                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" IsVisible="@ShowToggleDetails">
+                          <Children>
+                            <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" AutoHideScrollBars="false" ClipRect="ToggleClipRect" InnerPanel="ToggleClipRect\DetailToggleList" VerticalScrollbar="..\ToggleScrollbar" MouseScrollSpeed="40">
+                              <Children>
+                                <Widget Id="ToggleClipRect" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true" MarginRight="12">
+                                  <Children>
+                                    <ListPanel Id="DetailToggleList" DataSource="{DetailToggles}" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" StackLayout.LayoutMethod="VerticalTopToBottom" AcceptDrop="true" DropEventHandledManually="true" Command.Drop="..\..\..\..\..\..\ExecuteDetailDrop" CommandParameter.Drop="toggles">
+                                      <ItemTemplate>
+                                        <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="36" MarginBottom="4" Brush="Popup.SelectionElement.Tuple" AcceptDrag="true" Command.Click="ExecuteToggle" IsSelected="@IsEnabled">
+                                          <Children>
+                                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="12" MarginRight="48" Brush="SPOptions.Dropdown.Center.Text" Brush.FontSize="18" Brush.TextHorizontalAlignment="Left" Text="@Label" DoNotAcceptEvents="true" />
+                                            <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="36" HorizontalAlignment="Right" MarginRight="10" Brush="SPOptions.Dropdown.Center.Text" Brush.FontSize="16" Brush.TextHorizontalAlignment="Right" Text="On" IsVisible="@IsEnabled" DoNotAcceptEvents="true" />
+                                          </Children>
+                                        </ButtonWidget>
+                                      </ItemTemplate>
+                                    </ListPanel>
+                                  </Children>
+                                </Widget>
+                              </Children>
+                            </ScrollablePanel>
+                            <ScrollbarWidget Id="ToggleScrollbar" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="8" HorizontalAlignment="Right" MarginTop="2" MarginBottom="2" AlignmentAxis="Vertical" Handle="ToggleScrollbarHandle" MaxValue="100" MinValue="0">
+                              <Children>
+                                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="4" HorizontalAlignment="Center" Sprite="BlankWhiteSquare_9" AlphaFactor="0.2" Color="#5A4033FF" />
+                                <ImageWidget Id="ToggleScrollbarHandle" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="8" SuggestedHeight="10" HorizontalAlignment="Center" Brush="FaceGen.Scrollbar.Handle" />
+                              </Children>
+                            </ScrollbarWidget>
+                          </Children>
+                        </Widget>
+
+                        <!-- Range: vertical stack (label above row). No slider_inner_canvas — Details inset is already dark; canvas reads as a second bar behind the rails. -->
+                        <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" IsVisible="@ShowRangeDetails" StackLayout.LayoutMethod="VerticalTopToBottom">
+                          <Children>
+                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="24" Brush="Party.Text.TroopInfo" Brush.FontSize="16" Text="@RangeText" />
+                            <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="40" MarginTop="4" StackLayout.LayoutMethod="HorizontalLeftToRight">
+                              <Children>
+                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginRight="10">
+                                  <Children>
+                                    <PartyQolRangeSliderWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="28" VerticalAlignment="Center" ClipContents="true" LowValue="@LowSlider" HighValue="@HighSlider" LowHandle="LowHandle" HighHandle="HighHandle" Filler="RangeFiller" Command.ScrollUp="ExecuteRangeScrollUp" Command.ScrollDown="ExecuteRangeScrollDown">
+                                      <Children>
+                                        <Widget Id="RangeFiller" DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="0" SuggestedHeight="14" HorizontalAlignment="Left" VerticalAlignment="Center" Sprite="General\Slider\slider_fill" />
+                                        <BrushWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginTop="7" MarginBottom="7" Brush="Slider" />
+                                        <ImageWidget Id="LowHandle" DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="20" SuggestedHeight="28" HorizontalAlignment="Left" VerticalAlignment="Center" Brush="SliderHandle" />
+                                        <ImageWidget Id="HighHandle" DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="20" SuggestedHeight="28" HorizontalAlignment="Left" VerticalAlignment="Center" Brush="SliderHandle" />
+                                      </Children>
+                                    </PartyQolRangeSliderWidget>
+                                  </Children>
+                                </Widget>
+                                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="64" SuggestedHeight="32" VerticalAlignment="Center" Sprite="BlankWhiteSquare_9" Color="#000000FF" AlphaFactor="0.45">
+                                  <Children>
+                                    <EditableTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="4" MarginRight="4" Brush="SPOptions.Dropdown.Center.Text" Brush.TextHorizontalAlignment="Center" MaxLength="5" Text="@RangeMinText" />
+                                  </Children>
+                                </Widget>
+                                <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="24" Brush="Party.Text.TroopInfo" Brush.TextHorizontalAlignment="Center" Text="to" />
+                                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="64" SuggestedHeight="32" VerticalAlignment="Center" Sprite="BlankWhiteSquare_9" Color="#000000FF" AlphaFactor="0.45">
+                                  <Children>
+                                    <EditableTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="4" MarginRight="4" Brush="SPOptions.Dropdown.Center.Text" Brush.TextHorizontalAlignment="Center" MaxLength="5" Text="@RangeMaxText" />
+                                  </Children>
+                                </Widget>
+                              </Children>
+                            </ListPanel>
+                          </Children>
+                        </ListPanel>
+                      </Children>
+                    </ListPanel>
+                  </Children>
+                </Widget>
+              </Children>
+            </Widget>
+
+            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="18" ExtendRight="18" ExtendTop="18" ExtendBottom="18" DoNotAcceptEvents="true" />
+
+            <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginLeft="40" MarginRight="40" MarginBottom="14" StackLayout.LayoutMethod="VerticalBottomToTop">
+              <Children>
+                <!-- Row 2 (bottom): Save… then Cancel last -->
+                <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="48" MarginTop="4" StackLayout.LayoutMethod="HorizontalLeftToRight">
+                  <Children>
+                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="48">
+                      <Children>
+                        <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="110" SuggestedHeight="40" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="ButtonBrush1" Command.Click="ExecuteSave" UpdateChildrenStates="true">
+                          <Children>
+                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Text="@SaveText" DoNotAcceptEvents="true" />
+                          </Children>
+                        </ButtonWidget>
+                      </Children>
+                    </Widget>
+                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="48">
+                      <Children>
+                        <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="110" SuggestedHeight="40" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="ButtonBrush1" Command.Click="ExecuteSaveAs" UpdateChildrenStates="true">
+                          <Children>
+                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Text="@SaveAsText" DoNotAcceptEvents="true" />
+                          </Children>
+                        </ButtonWidget>
+                      </Children>
+                    </Widget>
+                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="48">
+                      <Children>
+                        <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="160" SuggestedHeight="40" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="ButtonBrush1" Command.Click="ExecuteSaveAndExit" UpdateChildrenStates="true">
+                          <Children>
+                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Text="@SaveAndExitText" DoNotAcceptEvents="true" />
+                          </Children>
+                        </ButtonWidget>
+                      </Children>
+                    </Widget>
+                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="48">
+                      <Children>
+                        <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="110" SuggestedHeight="40" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="ButtonBrush1" Command.Click="ExecuteCancel" UpdateChildrenStates="true">
+                          <Children>
+                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Text="@CancelText" DoNotAcceptEvents="true" />
+                          </Children>
+                        </ButtonWidget>
+                      </Children>
+                    </Widget>
+                  </Children>
+                </ListPanel>
+                <!-- Row 1 (above): New / Rename / Delete / Duplicate / Restore -->
+                <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="48" StackLayout.LayoutMethod="HorizontalLeftToRight">
+                  <Children>
+                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="48">
+                      <Children>
+                        <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="90" SuggestedHeight="40" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="ButtonBrush1" Command.Click="ExecuteNew" UpdateChildrenStates="true">
+                          <Children>
+                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Text="@NewText" DoNotAcceptEvents="true" />
+                          </Children>
+                        </ButtonWidget>
+                      </Children>
+                    </Widget>
+                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="48">
+                      <Children>
+                        <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="110" SuggestedHeight="40" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="ButtonBrush1" Command.Click="ExecuteRename" IsEnabled="@CanRename" AlphaFactor="@RenameButtonAlpha" UpdateChildrenStates="true">
+                          <Children>
+                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Text="@RenameText" DoNotAcceptEvents="true" />
+                          </Children>
+                        </ButtonWidget>
+                      </Children>
+                    </Widget>
+                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="48">
+                      <Children>
+                        <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="110" SuggestedHeight="40" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="ButtonBrush1" Command.Click="ExecuteDelete" IsEnabled="@CanDelete" AlphaFactor="@DeleteButtonAlpha" UpdateChildrenStates="true">
+                          <Children>
+                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Text="@DeleteText" DoNotAcceptEvents="true" />
+                          </Children>
+                        </ButtonWidget>
+                      </Children>
+                    </Widget>
+                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="48">
+                      <Children>
+                        <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="120" SuggestedHeight="40" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="ButtonBrush1" Command.Click="ExecuteDuplicate" UpdateChildrenStates="true">
+                          <Children>
+                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Text="@DuplicateText" DoNotAcceptEvents="true" />
+                          </Children>
+                        </ButtonWidget>
+                      </Children>
+                    </Widget>
+                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="48">
+                      <Children>
+                        <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="110" SuggestedHeight="40" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="ButtonBrush1" Command.Click="ExecuteRestore" IsEnabled="@CanRestore" AlphaFactor="@RestoreButtonAlpha" UpdateChildrenStates="true">
+                          <Children>
+                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Text="@RestoreText" DoNotAcceptEvents="true" />
+                          </Children>
+                        </ButtonWidget>
+                      </Children>
+                    </Widget>
+                  </Children>
+                </ListPanel>
+              </Children>
+            </ListPanel>
+          </Children>
+        </Widget>
+      </Children>
+    </Widget>
+  </Window>
+</Prefab>

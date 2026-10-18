@@ -1,8 +1,18 @@
 <DiscardedRoot>
-  <!-- Auto-upgrade: click = free only; Ctrl+click = all ready/affordable. Visible on upgrade popup header. -->
-  <ButtonWidget Id="PartyQOLAutoUpgradeButton" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="120" SuggestedHeight="32" VerticalAlignment="Center" HorizontalAlignment="Right" MarginRight="12" MarginTop="8" DoNotPassEventsToChildren="true" Brush="ButtonBrush1" Command.Click="ExecuteAutoUpgrade" IsVisible="@IsUpgradePopUp">
+  <!--
+    Frame chrome, right side: below the "Upgrade Troops" title plaque and above the
+    Avatar/Name header row (Dent starts at MarginTop 130).
+  -->
+  <ButtonWidget Id="PartyQOLAutoUpgradeButton" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="44" SuggestedHeight="34" HorizontalAlignment="Right" VerticalAlignment="Top" MarginTop="68" MarginRight="90" DoNotPassEventsToChildren="true" Brush="ButtonBrush1" Command.Click="ExecuteAutoUpgrade" IsVisible="@IsUpgradePopUp" UpdateChildrenStates="true">
     <Children>
-      <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Text="@AutoUpgradeText" />
+      <HintWidget DataSource="{UpgradeAllHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" />
+      <Widget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="32" SuggestedHeight="27" HorizontalAlignment="Center" VerticalAlignment="Center" UpdateChildrenStates="true">
+        <Children>
+          <BrushWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="17" SuggestedHeight="14" HorizontalAlignment="Left" VerticalAlignment="Bottom" Brush="PartyQOL.Upgrade.Icon" />
+          <BrushWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="17" SuggestedHeight="14" HorizontalAlignment="Right" VerticalAlignment="Bottom" Brush="PartyQOL.Upgrade.Icon" />
+          <BrushWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="17" SuggestedHeight="14" HorizontalAlignment="Center" VerticalAlignment="Top" Brush="PartyQOL.Upgrade.Icon" />
+        </Children>
+      </Widget>
     </Children>
   </ButtonWidget>
 </DiscardedRoot>

@@ -1,0 +1,4 @@
+<DiscardedRoot>
+  <!-- Static gold frame — not TutorialHighlightItemBrushWidget (that brush pulses). -->
+  <BrushWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="PartyQOL.Upgrade.PreferredHighlight" IsVisible="@IsHighlighted" />
+</DiscardedRoot>
