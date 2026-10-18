@@ -1,0 +1,48 @@
+---
+description: On locked PartyQOL DLL deploy, background tools/deploy-watcher.ps1 -Once with notify_on_output — never block or poll.
+alwaysApply: true
+---
+
+# PartyQOL deploy = build + non-blocking watcher on lock
+
+After every Release build meant for the game:
+
+1. Prefer a fast path that does **not** sit on MSBuild’s 10× DLL-copy retries:
+   - `dotnet build -c Release -p:SkipBannerlordDeploy=true`
+   - Copy `GUI\` + `SubModule.xml` into `Modules\PartyQOL` yourself
+   - GUI copy: **delete** `Modules\PartyQOL\GUI` first, then copy the folder.
+     Never `Copy-Item` onto an existing `GUI` (nests `GUI\GUI\` → duplicate
+     prefab names → UIExtenderEx assert).
+   - Try copy Release DLL → module; on lock, start the watcher immediately
+2. Or run normal `dotnet build -c Release`. If deploy succeeds → confirm hashes. If MSB3027 / MSB3021 / "being used by another process":
+   - **Immediately** start this repo’s one-shot watcher — do not wait on the user, do not ask them to close the game first.
+   - Still copy GUI / SubModule.xml if unlocked (DLL lock must not block asset deploy).
+
+## Starting the watcher (non-blocking)
+
+Run the watcher **in an agent Shell** so stdout is visible to Cursor. Do **not** use `Start-Process -WindowStyle Hidden` (that detaches output and blocks chat notifications).
+
+Prefer a **sandboxed** run first. `.cursor/sandbox.json` grants write access to `Modules\PartyQOL` (and UIExtenderEx prefab cache). Do **not** preemptively set `required_permissions: ["all"]`. Only retry with `["all"]` if the sandboxed run fails on a sandbox/permission error.
+
+```text
+Shell:
+  command: powershell -NoProfile -ExecutionPolicy Bypass -File "D:\Games\Bannerlord\Mod-dev\PartyQOL\tools\deploy-watcher.ps1" -Once
+  block_until_ms: 0
+  notify_on_output:
+    pattern: DEPLOYED|UP TO DATE|FAILED|MISMATCH
+    reason: PartyQOL deploy result
+```
+
+3. Tell the user deploy is waiting on game/launcher close, then **end the turn**. Do not `AwaitShell`, do not hash-poll, do not sleep-loop.
+4. When Cursor notifies on watcher output matching the pattern, send a short confirm (or report `FAILED` / `MISMATCH`). That is the only follow-up for a locked-DLL wait.
+5. **Always chat-notify after every successful deploy**, including GUI-only /
+   asset copies that never start the watcher (what landed + that it’s in the module).
+
+## Do not
+
+- Treat a locked-DLL build failure as finished without starting `tools\deploy-watcher.ps1 -Once`
+- Use another mod’s deploy watcher
+- Start the persistent watcher (no `-Once`) unless the user asks
+- `Start-Process` / Hidden detach for the watcher when the agent needs a chat ping
+- Block the turn waiting for deploy (`AwaitShell` hash loops, long sleeps, “keep monitoring” in-process)
+- Preemptively request `required_permissions: ["all"]` for the watcher when sandbox paths are configured

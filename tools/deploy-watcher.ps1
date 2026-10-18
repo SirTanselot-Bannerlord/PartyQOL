@@ -55,7 +55,7 @@ try {
         $cache = Join-Path $modules 'Bannerlord.UIExtenderEx\CompiledPrefabs'
         if (-not (Test-Path $cache)) { return }
         Get-ChildItem $cache -Recurse -File -ErrorAction SilentlyContinue |
-            Where-Object { $_.Name -like '*PartyScreen*' -or $_.Name -like '*PartyTroopManagerPopUp*' -or $_.Name -like '*PartyTroopUpgradeItem*' } |
+            Where-Object { $_.Name -like '*PartyScreen*' -or $_.Name -like '*PartyTroopManagerPopUp*' -or $_.Name -like '*PartyTroopUpgradeItem*' -or $_.Name -like '*PartyComposition*' -or $_.Name -like '*PartyTroopTuple*' -or $_.Name -like '*PartyQOL*' } |
             Remove-Item -Force -ErrorAction SilentlyContinue
     }
 

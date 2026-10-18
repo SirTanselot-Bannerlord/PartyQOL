@@ -1,0 +1,54 @@
+---
+description: Keep Sort and Filter settings menus (and related party-bar UX) in parity
+alwaysApply: true
+---
+
+# Sort / Filter menu parity
+
+PartyQOL has two parallel settings UIs: **Troop Sort** (`PartyQOLSortSettings` / `SortSettingsVM`) and **Troop Filter** (`PartyQOLFilterSettings` / `FilterSettingsVM`). Treat them as one product surface.
+
+## When changing either menu
+
+Apply the same change to the other unless there is a clear domain reason not to (document that reason in the PR/commit or a code comment).
+
+Examples that must stay aligned:
+
+- Footer green buttons: layout (two rows), order, labels, and Cancel **last**
+- Shared actions: New, Rename, Delete, Duplicate, Restore (when meaningful), Save, Save As, Save and Exit, Cancel
+- Profiles column chrome, criteria column structure, Details panel patterns
+- Culture / type list seeding — **full campaign lists**, not party-only, for both Sort Details order and Filter toggles
+- Popup size, frame, help-text tone
+
+## Domain-only differences (OK)
+
+- Sort: Active vs Available chips, Asc/Desc triangles, Type/Culture order lists
+- Filter: criterion On/Off, range sliders, per-toggle enable chips
+- Restore on Sort resets factory Type/Tier/Culture presets; on Filter resets draft criteria to `CreateDraft()` defaults while keeping the editing name when saved
+- Rename: Filter — any saved preset; Sort — custom (non-factory) presets only. Factory Type/Tier/Culture cannot be renamed or deleted.
+
+## Shared save / activate (must stay aligned)
+
+- **Save / Save As / Save and Exit** persist the preset only. They must **not** set it as the active sort/filter.
+- The party-bar Sort and Filter dropdowns are the option selectors (`Activate`).
+- If the user saves a preset that is **already** active, refresh live `TroopSortState` / `FilterState` from that preset so edits take effect without switching selection.
+
+## Checklist before finishing a UI task
+
+1. Did I touch Sort XML or VM? → Mirror in Filter (or note why not).
+2. Did I touch Filter XML or VM? → Mirror in Sort (or note why not).
+3. Did I change culture/type seeding in one path? → Update `SortOrderDefaults` / shared helpers so both menus call the same source.
+4. Did I change footer buttons? → Both prefabs match (row structure + Cancel last).
+
+## Enforcement (Cursor hook)
+
+Project hooks track edits to these pairs and auto-follow-up on agent stop if only one side changed:
+
+- `GUI/Prefabs/Popups/PartyQOLSortSettings.xml` ↔ `PartyQOLFilterSettings.xml`
+- `UI/Popups/SortSettingsVM.cs` ↔ `FilterSettingsVM.cs`
+
+**Allowlist (domain-only):** put `parity-ok: <reason>` in the *edited* file so the stop hook skips that pair for the turn.
+
+- XML: `<!-- parity-ok: domain-only -->`
+- C#: `// parity-ok: domain-only`
+
+Do not use the allowlist to skip a change that should apply to both menus.
