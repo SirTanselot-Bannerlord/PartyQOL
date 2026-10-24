@@ -1,0 +1,33 @@
+---
+description: Bannerlord mod workflow for PartyQOL: deploy, commit, release hygiene
+alwaysApply: true
+---
+
+# PartyQOL workflow
+
+Details: personal skills `bannerlord-deploy-watcher` (build/deploy) and
+`bannerlord-release` (version bump, zip). This rule is the always-on summary.
+
+- **Module:** `PartyQOL`, deployed to
+  `D:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\PartyQOL`.
+- **Deploy** every finished change that builds. Build with `-p:SkipBannerlordDeploy=true`,
+  copy `GUI\` and `SubModule.xml` into the module folder, then the DLL/PDB. If the DLL is
+  locked run `"D:\Games\Bannerlord\Mod-dev\PartyQOL\tools\deploy-watcher.ps1" -Once`
+  in the agent Shell (`block_until_ms: 0`, `notify_on_output` `DEPLOYED|UP TO DATE|FAILED|MISMATCH`).
+  Asset copy must not wait on the DLL lock.
+  - **GUI copy:** delete `Modules\PartyQOL\GUI` first, then copy the folder. Never copy
+    onto an existing `GUI` (it nests `GUI\GUI\`, duplicates prefab names, and asserts in
+    UIExtenderEx).
+  - Prefer a sandboxed run (`.cursor/sandbox.json` covers the module folder and the
+    UIExtenderEx prefab cache). Request `required_permissions: ["all"]` only if the
+    sandbox fails.
+- If Auto-review blocks a build, copy, or watcher call, retry that same call with
+  approval. Do not drop the deploy.
+- Never `Start-Process` a watcher, and never poll or `AwaitShell` for it. End the
+  turn after starting it. Confirm in chat after any deploy, including GUI-only copies.
+- **Commit after every finished change** that builds. Stage only the files you
+  changed (`git add <paths>`, `git commit -- <paths>`); the tree can hold other
+  uncommitted work. No push or amend unless asked.
+- **Version bumps and release zips only when asked.** `dist/` stays gitignored.
+  Remove debug logging and stray log files (repo and module folder) before zipping.
+- Work only in this repo. Never run or edit another mod's watcher or files.
