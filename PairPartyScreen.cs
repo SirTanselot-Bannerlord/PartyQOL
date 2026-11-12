@@ -16,9 +16,9 @@ namespace PartyQOL
     /// </summary>
     public static class PairPartyScreen
     {
-        public static void Open(MobileParty leftParty, MobileParty rightParty)
+        public static void Open(MobileParty leftParty, MobileParty rightParty, PartyScreenClosedDelegate onClosed = null)
         {
-            if (!TryCreateLogic(leftParty, rightParty, out PartyScreenLogic logic))
+            if (!TryCreateLogic(leftParty, rightParty, out PartyScreenLogic logic, onClosed))
             {
                 return;
             }
@@ -30,7 +30,11 @@ namespace PartyQOL
         /// Builds the transfer logic for a pair without touching the screen stack.
         /// Side switches install this onto the already-open party screen.
         /// </summary>
-        public static bool TryCreateLogic(MobileParty leftParty, MobileParty rightParty, out PartyScreenLogic logic)
+        public static bool TryCreateLogic(
+            MobileParty leftParty,
+            MobileParty rightParty,
+            out PartyScreenLogic logic,
+            PartyScreenClosedDelegate onClosed = null)
         {
             logic = null;
             if (Game.Current?.GameStateManager == null)
@@ -50,7 +54,7 @@ namespace PartyQOL
 
             if (leftParty == null || !AbsorbPartyService.IsTransferSideParty(leftParty) || leftParty == rightParty)
             {
-                logic = CreateDismissLogic(rightParty);
+                logic = CreateDismissLogic(rightParty, onClosed);
                 return logic != null;
             }
 
@@ -95,7 +99,8 @@ namespace PartyQOL
                 IsTroopUpgradesDisabled = !involvesMain,
                 MemberTransferState = PartyScreenLogic.TransferState.Transferable,
                 PrisonerTransferState = PartyScreenLogic.TransferState.Transferable,
-                AccompanyingTransferState = PartyScreenLogic.TransferState.Transferable
+                AccompanyingTransferState = PartyScreenLogic.TransferState.Transferable,
+                PartyScreenClosedDelegate = GuardClosed(onClosed)
             };
 
             logic = new PartyScreenLogic();
@@ -172,7 +177,7 @@ namespace PartyQOL
             }
         }
 
-        private static PartyScreenLogic CreateDismissLogic(MobileParty rightParty)
+        private static PartyScreenLogic CreateDismissLogic(MobileParty rightParty, PartyScreenClosedDelegate onClosed = null)
         {
             if (rightParty == null || !AbsorbPartyService.IsTransferSideParty(rightParty))
             {
@@ -215,7 +220,8 @@ namespace PartyQOL
                 IsTroopUpgradesDisabled = rightParty != MobileParty.MainParty,
                 MemberTransferState = PartyScreenLogic.TransferState.Transferable,
                 PrisonerTransferState = PartyScreenLogic.TransferState.Transferable,
-                AccompanyingTransferState = PartyScreenLogic.TransferState.NotTransferable
+                AccompanyingTransferState = PartyScreenLogic.TransferState.NotTransferable,
+                PartyScreenClosedDelegate = GuardClosed(onClosed)
             };
 
             PartyScreenLogic logic = new PartyScreenLogic();
@@ -239,6 +245,28 @@ namespace PartyQOL
         public static void ReopenWithLeft(MobileParty leftParty, MobileParty rightParty = null)
         {
             Reopen(leftParty, rightParty ?? MobileParty.MainParty);
+        }
+
+        /// <summary>
+        /// Vanilla's close callback destroys an emptied party and moves its ships.
+        /// Dismiss mode has no left party, and that callback does not null-check.
+        /// </summary>
+        private static PartyScreenClosedDelegate GuardClosed(PartyScreenClosedDelegate onClosed)
+        {
+            if (onClosed == null)
+            {
+                return null;
+            }
+
+            return (left, leftMembers, leftPrisoners, right, rightMembers, rightPrisoners, fromCancel) =>
+            {
+                if (left == null)
+                {
+                    return;
+                }
+
+                onClosed(left, leftMembers, leftPrisoners, right, rightMembers, rightPrisoners, fromCancel);
+            };
         }
 
         private static bool DoneHandler(

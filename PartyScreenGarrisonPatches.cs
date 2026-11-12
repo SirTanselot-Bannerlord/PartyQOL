@@ -44,14 +44,14 @@ namespace PartyQOL
         [HarmonyPatch(typeof(PartyScreenHelper), nameof(PartyScreenHelper.OpenScreenAsManageTroopsAndPrisoners))]
         private static class ManageTroopsAndPrisonersPatch
         {
-            private static bool Prefix(MobileParty leftParty)
+            private static bool Prefix(MobileParty leftParty, PartyScreenClosedDelegate onPartyScreenClosed)
             {
                 if (!AbsorbPartyService.IsManageableGarrisonAtPlayerLocation(leftParty))
                 {
                     return true;
                 }
 
-                PairPartyScreen.Open(leftParty, MobileParty.MainParty);
+                PairPartyScreen.Open(leftParty, MobileParty.MainParty, onPartyScreenClosed);
                 return false;
             }
         }

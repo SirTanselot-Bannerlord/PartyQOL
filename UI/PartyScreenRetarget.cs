@@ -30,7 +30,11 @@ namespace PartyQOL.UI
                               + " to L=" + (left?.Name?.ToString() ?? "(dismiss)")
                               + " R=" + (right?.Name?.ToString() ?? "(none)"));
 
-            if (!PairPartyScreen.TryCreateLogic(left, right, out PartyScreenLogic logic))
+            PartyScreenClosedDelegate closed = vm.PartyScreenLogic == null
+                ? null
+                : AccessTools.Field(typeof(PartyScreenLogic), "PartyScreenClosedEvent")
+                    ?.GetValue(vm.PartyScreenLogic) as PartyScreenClosedDelegate;
+            if (!PairPartyScreen.TryCreateLogic(left, right, out PartyScreenLogic logic, closed))
             {
                 PartyQolLog.Write("retarget failed: could not build logic");
                 return false;
