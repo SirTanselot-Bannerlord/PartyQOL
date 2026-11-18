@@ -23,8 +23,8 @@ Examples that must stay aligned:
 
 - Sort: Active vs Available chips, Asc/Desc triangles, Type/Culture order lists
 - Filter: criterion On/Off, range sliders, per-toggle enable chips
-- Restore on Sort resets factory Type/Tier/Max Tier/Culture presets only. On Filter, factory presets (Wounded, Healthy, Elite, Regular) reset to that template; drafts and custom presets reset to `CreateDraft()` defaults while keeping the editing name when saved
-- Rename/Delete: factory presets are locked on both menus. Sort factories are Type, Tier, Max Tier, Culture. Filter factories are Wounded, Healthy, Elite, Regular. Custom presets can be renamed and deleted on both.
+- Restore on Sort resets factory Type/Tier/Max Tier/Culture presets only. On Filter, factory presets (Wounded, Healthy) reset to that template; drafts and custom presets reset to `CreateDraft()` defaults while keeping the editing name when saved
+- Rename/Delete: factory presets are locked on both menus. Sort factories are Type, Tier, Max Tier, Culture. Filter factories are Wounded and Healthy. Custom presets can be renamed and deleted on both.
 
 ## Shared save / activate (must stay aligned)
 

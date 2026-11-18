@@ -9,7 +9,7 @@ using TaleWorlds.Localization;
 
 namespace PartyQOL.UI.Popups
 {
-    // parity-ok: condition mode is filter-only; factory lock matches Sort (Wounded/Healthy/Elite/Regular)
+    // parity-ok: condition mode is filter-only; factory lock matches Sort (Wounded/Healthy)
     public sealed class FilterSettingsVM : PopupVM
     {
         private readonly PartyVM _partyVm;
