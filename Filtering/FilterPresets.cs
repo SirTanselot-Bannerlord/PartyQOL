@@ -129,6 +129,13 @@ namespace PartyQOL.Filtering
         internal const int MaxNameLength = 22;
         internal const string NewCustomName = "New Custom";
 
+        /// <summary>
+        /// Shipped filters. Elite is an upgrade line that reaches tier 6.
+        /// Regular is every other line (max tier 5 or below). Legacy saves named Common
+        /// are renamed to Regular when they still match that template.
+        /// </summary>
+        private static readonly string[] FactoryNames = { "Wounded", "Healthy", "Elite", "Regular" };
+
         private static readonly List<FilterPreset> Items = new List<FilterPreset>();
         private static bool _loaded;
         private static string _activeName = string.Empty;
@@ -193,6 +200,59 @@ namespace PartyQOL.Filtering
         internal static FilterPreset CreateDraft()
         {
             return new FilterPreset { Name = NewCustomName };
+        }
+
+        internal static bool IsFactoryName(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+            {
+                return false;
+            }
+
+            for (int i = 0; i < FactoryNames.Length; i++)
+            {
+                if (string.Equals(name, FactoryNames[i], StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        internal static FilterPreset CreateFactoryPreset(string name)
+        {
+            var preset = new FilterPreset
+            {
+                Name = CanonicalFactoryName(name),
+                Types = FilterState.DefaultTypes(),
+                Cultures = FilterState.DefaultCultures()
+            };
+
+            if (string.Equals(name, "Wounded", StringComparison.OrdinalIgnoreCase))
+            {
+                preset.UseCondition = true;
+                preset.ConditionMode = ConditionFilterMode.Wounded;
+            }
+            else if (string.Equals(name, "Healthy", StringComparison.OrdinalIgnoreCase))
+            {
+                preset.UseCondition = true;
+                preset.ConditionMode = ConditionFilterMode.Healthy;
+            }
+            else if (string.Equals(name, "Elite", StringComparison.OrdinalIgnoreCase))
+            {
+                preset.UseMaxTier = true;
+                preset.MaxTierMin = 6;
+                preset.MaxTierMax = 6;
+            }
+            else if (string.Equals(name, "Regular", StringComparison.OrdinalIgnoreCase))
+            {
+                preset.UseMaxTier = true;
+                preset.MaxTierMin = 0;
+                preset.MaxTierMax = 5;
+            }
+
+            return preset;
         }
 
         internal static bool TrySaveAs(string rawName, FilterPreset draft, out string savedName, out string error)
@@ -261,9 +321,15 @@ namespace PartyQOL.Filtering
                 return false;
             }
 
-            if (string.Equals(newName, NewCustomName, StringComparison.OrdinalIgnoreCase))
+            if (IsFactoryName(oldName))
             {
-                error = "Choose a different name than New Custom.";
+                error = "Factory filters cannot be renamed.";
+                return false;
+            }
+
+            if (IsFactoryName(newName) || string.Equals(newName, NewCustomName, StringComparison.OrdinalIgnoreCase))
+            {
+                error = "Choose a different name.";
                 return false;
             }
 
@@ -303,6 +369,12 @@ namespace PartyQOL.Filtering
             EnsureLoaded();
             if (!TryNormalize(rawName, out string name, out error))
             {
+                return false;
+            }
+
+            if (IsFactoryName(name))
+            {
+                error = "Factory filters cannot be deleted.";
                 return false;
             }
 
@@ -449,10 +521,87 @@ namespace PartyQOL.Filtering
                 Debug.Print("PartyQOL: could not read filter presets (" + e.Message + ")");
             }
 
+            EnsureStarterPresets();
+
             if (Find(_activeName) == null)
             {
                 _activeName = string.Empty;
             }
+        }
+
+        private static void EnsureStarterPresets()
+        {
+            bool changed = false;
+            FilterPreset legacyCommon = Find("Common");
+            if (legacyCommon != null && Find("Regular") == null && IsUneditedRegular(legacyCommon))
+            {
+                legacyCommon.Name = "Regular";
+                if (string.Equals(_activeName, "Common", StringComparison.OrdinalIgnoreCase))
+                {
+                    _activeName = "Regular";
+                }
+
+                changed = true;
+            }
+
+            for (int i = 0; i < FactoryNames.Length; i++)
+            {
+                if (Find(FactoryNames[i]) != null || Items.Count >= MaxCount)
+                {
+                    continue;
+                }
+
+                Items.Add(CreateFactoryPreset(FactoryNames[i]));
+                changed = true;
+            }
+
+            if (changed)
+            {
+                TryWrite();
+            }
+        }
+
+        /// <summary>
+        /// True when a saved Common preset is still the non-elite template
+        /// (max tier 0–5, every type and culture left on).
+        /// </summary>
+        private static bool IsUneditedRegular(FilterPreset preset)
+        {
+            FilterPreset factory = CreateFactoryPreset("Regular");
+            if (preset.UseType != factory.UseType
+                || preset.UseCulture != factory.UseCulture
+                || preset.UseTier != factory.UseTier
+                || preset.UseMaxTier != factory.UseMaxTier
+                || preset.UseLevel != factory.UseLevel
+                || preset.UseCount != factory.UseCount
+                || preset.UseCondition != factory.UseCondition
+                || preset.ConditionMode != factory.ConditionMode
+                || preset.TierMin != factory.TierMin
+                || preset.TierMax != factory.TierMax
+                || preset.MaxTierMin != factory.MaxTierMin
+                || preset.MaxTierMax != factory.MaxTierMax
+                || preset.LevelMin != factory.LevelMin
+                || preset.LevelMax != factory.LevelMax
+                || preset.CountMin != factory.CountMin
+                || preset.CountMax != factory.CountMax)
+            {
+                return false;
+            }
+
+            return !preset.Types.Exists(t => !t.Enabled) && !preset.Cultures.Exists(c => !c.Enabled);
+        }
+
+        private static string CanonicalFactoryName(string name)
+        {
+            for (int i = 0; i < FactoryNames.Length; i++)
+            {
+                if (string.Equals(name, FactoryNames[i], StringComparison.OrdinalIgnoreCase))
+                {
+                    return FactoryNames[i];
+                }
+            }
+
+            return name;
         }
 
         private static FilterPreset ParseLine(string line)

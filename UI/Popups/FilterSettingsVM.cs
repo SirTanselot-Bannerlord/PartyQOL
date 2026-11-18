@@ -9,7 +9,7 @@ using TaleWorlds.Localization;
 
 namespace PartyQOL.UI.Popups
 {
-    // parity-ok: wounded/healthy mode is filter-only
+    // parity-ok: condition mode is filter-only; factory lock matches Sort (Wounded/Healthy/Elite/Regular)
     public sealed class FilterSettingsVM : PopupVM
     {
         private readonly PartyVM _partyVm;
@@ -498,9 +498,17 @@ namespace PartyQOL.UI.Popups
 
         public void ExecuteRestore()
         {
-            // Reset criteria to factory draft defaults; keep the editing name when on a saved profile.
+            if (!CanRestore)
+            {
+                return;
+            }
+
+            // Factory presets reset to their own template. Other profiles reset to a blank draft.
+            // A saved name is kept either way.
             string keepName = _editingSavedName;
-            FilterPreset fresh = FilterPresets.CreateDraft();
+            FilterPreset fresh = !string.IsNullOrEmpty(keepName) && FilterPresets.IsFactoryName(keepName)
+                ? FilterPresets.CreateFactoryPreset(keepName)
+                : FilterPresets.CreateDraft();
             if (!string.IsNullOrEmpty(keepName))
             {
                 fresh.Name = keepName;
@@ -667,9 +675,12 @@ namespace PartyQOL.UI.Popups
 
         private void RefreshActionFlags()
         {
-            CanDelete = !EditingDraft;
-            CanRename = !EditingDraft;
-            // Filter Restore always resets criteria to CreateDraft() defaults (including drafts).
+            bool factory = !EditingDraft && FilterPresets.IsFactoryName(_editingSavedName);
+            bool customSaved = !EditingDraft && !factory;
+            CanDelete = customSaved;
+            CanRename = customSaved;
+            // Factory presets restore their own template. Drafts and custom presets restore
+            // CreateDraft() criteria (a saved name is kept).
             CanRestore = true;
             DeleteButtonAlpha = CanDelete ? 1f : 0.4f;
             RenameButtonAlpha = CanRename ? 1f : 0.4f;
