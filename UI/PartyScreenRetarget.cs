@@ -20,15 +20,8 @@ namespace PartyQOL.UI
         {
             if (vm == null)
             {
-                PartyQolLog.Write("retarget skipped: no PartyVM");
                 return false;
             }
-
-            string fromLeft = vm.PartyScreenLogic?.LeftOwnerParty?.Name?.ToString() ?? "(dismiss)";
-            string fromRight = vm.PartyScreenLogic?.RightOwnerParty?.Name?.ToString() ?? "(none)";
-            PartyQolLog.Write("retarget from L=" + fromLeft + " R=" + fromRight
-                              + " to L=" + (left?.Name?.ToString() ?? "(dismiss)")
-                              + " R=" + (right?.Name?.ToString() ?? "(none)"));
 
             PartyScreenClosedDelegate closed = vm.PartyScreenLogic == null
                 ? null
@@ -36,14 +29,12 @@ namespace PartyQOL.UI
                     ?.GetValue(vm.PartyScreenLogic) as PartyScreenClosedDelegate;
             if (!PairPartyScreen.TryCreateLogic(left, right, out PartyScreenLogic logic, closed))
             {
-                PartyQolLog.Write("retarget failed: could not build logic");
                 return false;
             }
 
             PartyState state = PartyScreenHelper.GetActivePartyState();
             if (state == null)
             {
-                PartyQolLog.Write("retarget failed: no active party state");
                 return false;
             }
 
@@ -68,8 +59,6 @@ namespace PartyQOL.UI
                 vm.DoneHint.HintText = new TextObject("{=!}" + (logic.DoneReasonString ?? string.Empty));
             }
 
-            PartyQolLog.Write("retarget ok Ltroops=" + vm.OtherPartyTroops?.Count
-                              + " Rtroops=" + vm.MainPartyTroops?.Count);
             return true;
         }
 

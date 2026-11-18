@@ -109,9 +109,8 @@ namespace PartyQOL.UI
                 {
                     ApplyQueuedSwitch(left, right, side);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    PartyQolLog.Write("switch failed", ex);
                 }
                 finally
                 {
@@ -645,7 +644,6 @@ namespace PartyQOL.UI
             PartyVM vm = Current?.Party;
             if (vm?.PartyScreenLogic == null || Helpers.PartyScreenHelper.GetActivePartyState() == null)
             {
-                PartyQolLog.Write("switch opened a new screen (no live party VM)");
                 PairPartyScreen.Open(left, right);
                 return;
             }
